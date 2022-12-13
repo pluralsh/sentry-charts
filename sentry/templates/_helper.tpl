@@ -7,7 +7,6 @@
     {{- end -}}
 {{- end -}}
 
-{{- define "nginx.port" -}}{{ default "8080" .Values.nginx.containerPort }}{{- end -}}
 {{- define "relay.port" -}}3000{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
@@ -95,6 +94,26 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "sentry.labels" -}}
+helm.sh/chart: {{ include "sentry.chart" . }}
+{{ include "sentry.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "sentry.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "sentry.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 
 {{- define "sentry.rabbitmq.fullname" -}}
 {{- printf "%s-%s" .Release.Name "rabbitmq" | trunc 63 | trimSuffix "-" -}}
